@@ -43,7 +43,7 @@ En este curso usted aprenderá a manejar problemas del mundo real a través de h
 
 |Fecha|Clase|Ejercicio|
 |-----:|-----|------:|
-|2021-02-18|[Programación en R]()|[E1]()|
+|2021-02-18|[Programación en R](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Presentaciones/R.pdf)|[E1]()|
 
 
 ## Proyecto Final
@@ -53,6 +53,6 @@ En este curso usted aprenderá a manejar problemas del mundo real a través de h
 
 ## Material de Apoyo
 
-* [Git & GitHub]()
+* [Git & GitHub](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Presentaciones/git%26github.pdf)
 
 
