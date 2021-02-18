@@ -1,6 +1,6 @@
 ---
 title: "Unidad 5 - Programación en R"
-author: "Laura Valencia - Daniel Jiménez"
+author: "BIT - CENISOFT"
 date: "18 de febrero de 2021"
 output: html_document
 ---
@@ -57,7 +57,7 @@ Dentro del análisis descriptivo, encontramos una serie de medidas/cálculos que
   
   La media aritmética, tamién conocida como el promedio, es la medida de centralidad más utilizada y está   representada por:
   
-  $$\overline{\chi}=\sum_{i=1}^N{\chi_i }$$
+$$\overline{\chi}=\frac{\sum_{i=1}^N{\chi_i }}{N}$$
   
 * **Mediana:**
     + Corresponde al dato de la mitad de una variable ordenada
