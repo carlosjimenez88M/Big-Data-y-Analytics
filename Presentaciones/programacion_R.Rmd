@@ -1,0 +1,445 @@
+---
+title: "Unidad 5 - Programación en R"
+author: "Laura Valencia - Daniel Jiménez"
+date: "18 de febrero de 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+ ![](https://www.r-project.org/logo/Rlogo.png)
+
+## **¿Qué es R?**
+
+[**R**](https://cran.r-project.org/) es un lenguaje de programación interpretado, desarrollado inicialmente con un enfoque al análisis estadístico. Es uno de los programas más utilizados en la investigación científica, siendo además, bastante popular en los campos de [**Machine Learning**](https://es.wikipedia.org/wiki/Aprendizaje_autom%C3%A1tico), [**Minería de Datos**](https://es.wikipedia.org/wiki/Miner%C3%ADa_de_datos), así como aplicaciones específicas en diversas líneas de conocimiento (Medicina, finanzas, etc...), gracias a la posibilidad de cargar diferentes bibliotecas o paquetes con funcionalidades de cálculo y graficación.
+
+### **Características**
+
+* Proporciona un amplio abanico de herramientas estadísticas: Modelos lineales y no lineales, análisis de series de tiempo, algoritmos de clasificación y agrupamiento, así como poderosas herramientas para gráficación y visualización.
+
+* Al ser un lenguaje de programación, permite que los usuarios lo extiendan definiendo funciones propias. Gran parte de las funciones de R están escritas en el mismo R, sin embargo, en el caso de algunos algoritmos computacionalmente exigentes es posible desarrollar librerías en C, C++ o Fortran que se cargan dinámicamente
+
+* Es un lenguaje orientado a objetos 
+
+* Se puede integrar fácilmente con lenguajes como Python
+
+* Posee su propio formato para la documentación basado en [LaTeX](https://es.wikipedia.org/wiki/LaTeX) llamado [R Markdown](https://rmarkdown.rstudio.com/)
+
+* Puede usarse como herramienta de cálculo numérico siendo tan eficaz como MATLAB, por ejemplo, aplicación con la cual, por cierto, se puede integrar fácilmente
+
+* Es multiplataforma: Funciona en Linux, Windows y MacOS
+
+>*Antes de continuar con **R**, vamos a  darle un vistazo a algunos conceptos importantes, los cuales aplicaremos hoy con este lenguaje de programación...*
+
+### **Tipos de Variables**
+
+![](https://relopezbriega.github.io/images/categorical_data.jpg)
+
+
+### **Análisis descriptivo**
+
+* Describe tendencias clave en los datos
+
+* La observación de patrones ayuda al posterior planteamiento de hipótesis y hacer inferencia sobre los datos
+
+* Es la mejor manera de "saber qué pasó" a partir de los patrones de comportamiento que presentan los datos
+
+Dentro del análisis descriptivo, encontramos una serie de medidas/cálculos que nos ayudan a tener esa comprensión de los datos anteriormente citada, estas medidas se dividen principalmente en cuatro grupos:
+
+#### **Medidas de Centralidad**
+
+* **Media:** 
+    + Es la medida más conocida para medir el centro de los datos 
+    + Corresponde al escenario más equilibrado
+    + No funciona para variables cualitativas
+  
+  La media aritmética, tamién conocida como el promedio, es la medida de centralidad más utilizada y está   representada por:
+  
+  $$\overline{\chi}=\sum_{i=1}^N{\chi_i }$$
+  
+* **Mediana:**
+    + Corresponde al dato de la mitad de una variable ordenada
+    + Es invariable a datos atípicos
+    + Funciona para variables cuantitativas y variables cualitativas de escala ordinal
+    
+   
+* **Moda:**
+
+    + Es el dato más frecuente, de mayor probabilidad
+    + Funciona en variables cualitativas 
+    + En variables continuas usualmente no aparecen repeticiones
+    
+
+
+
+#### **Medidas de Variabilidad:** 
+
+Son las que nos muestran la dispersión de los datos respecto al valor central (media)
+
+* **Varianza** 
+      + Es cuadrado del valor medio (promedio) de las distancias entre cada observación y la media
+      + Su resultado siempre es positivo
+      
+
+$$\sigma^2=\frac{\sum_{i=1}^N{(\chi-\mu)}^2}{N}$$
+
+
+* **Desviación Estándar:**
+      + Es la raiz cuadrada de la varianza
+      + Está dada en las unidades de la variable
+      + Indica qué tan dispersos están los datos respecto a la media
+      
+
+$$\sigma=\sqrt\frac{\sum_{i=1}^N{(\chi-\mu)}^2}{N}$$
+
+
+* **Coeficiente de Variación:**
+      + Se define como la proporción de variabilidad respecto a la media
+      + Este cociente es utilizado para comparar conjuntos de datos de diferentes poblaciones
+  
+
+$$CV=\frac{\sigma}{|\overline\chi|}$$ 
+
+
+#### **Medidas de Posición:**
+
+Son valores que permiten dividir el conjunto de datos ordenado de menor a mayor en partes iguales y se usan para clasificar una observación dentro de una población o muestra. Las medidas de posición más utilizadas son los cuartiles, los deciles y los percentiles
+
+* **Cuartiles:** Dividen la población o muestra en 4 partes iguales.
+
+      + Q1: Representa el 25% de los datos
+      + Q2: Corresponde a la Mediana y representa el 50% de los datos
+      + Q3: Representa el 75% de los datos
+
+* **Deciles:** Dividen la población o muestra en 10 partes iguales
+
+* **Percentiles:** Dividen la población o muestra en 100 partes iguales
+
+
+#### **Medidas de Forma:**
+
+* **Asimetría:** Indica la simetría de la distribución de una variable respecto a la media
+
+![](https://www.universoformulas.com/imagenes/estadistica/descriptiva/tipos-asimetria.jpg)
+
+
+* **Kurtosis:** 
+
+    + Mide cuán apuntalada o achatada se encuentra una distribución
+    + Indica la cantidad de datos que hay cercanos a la media, de manera que a mayor grado de Kurtosis,        más apuntalada será la forma de la curva.
+    
+![](https://measurecontrol.com/wp-content/uploads/2009/03/curva_curtosis.jpg)
+
+> Ahora, vamos a revisar un par de conceptos adicionales que nos ayudarán a comprender mejor el alcance de la estadística descriptiva.
+
+
+#### **¿Qué es una distribución?**
+
+Es la descripción en términos estadísticos de la manera en que se presenta un determinado fenómeno, a partir de el ordenamiento de los datos de acuerdo a su frecuencia de ocurrencia. Gráficamente la podemos observar en primera instancia a través de un [histograma](https://es.wikipedia.org/wiki/Histograma#:~:text=En%20estad%C3%ADstica%2C%20un%20histograma%20es,frecuencia%20de%20los%20valores%20representados.).
+
+#### **¿Qué es la correlación?**
+
+Indica la fuerza y dirección de una relación lineal y proporcionalidad entre 2 variables. Es importante aclarar, que la correlación por sí misma no define causalidad.
+
+* La correlación toma valores entre -1 y 1, donde:
+
+    + Si la correlación está cercana a 1, se habla de una correlación positiva fuerte (si una variable         aumenta, la otra también aumenta)
+
+    + Si la correlación está cercana a -1, se habla de una correlación negativa fuerte (si una variable         aumenta, la otra disminuye)
+    
+    + Si la correlación está cercana a 0, se habla de una correlación débil (no existe una relación            lineal y proporcionalidad entre las variables)
+    
+![](https://www.maximaformacion.es/wp-content/uploads/2020/07/Qu%C3%A9-es-la-correlacion_valores-del-coeficiente.png)
+    
+
+
+## **Ejemplo**
+
+La base de datos que trabajaremos se llama IRIS:
+
+* Es un dataset muy conocido dentro del mundo del análisis de datos 
+
+* Se compone de 150 observaciones de flores de la planta IRIS
+
+* Existen 3 clases de tipos de flores en esta planta: virginica, setosa y versicolor 
+
+* El dataset contiene 50 observaciones de cada una de las flores
+
+* Las variables o atributos que se miden a cada flor son:
+
+    + El tipo de flor como variable categórica
+    + El largo y el ancho del pétalo en cms como variables cuantitativas continuas
+    + El largo y el ancho del sépalo en cms como variables cuantitativas continuas
+
+```{r}
+#Cargamos el Dataset
+
+data("iris")
+
+#Observo los nombres de las variables
+
+names(iris)
+```
+Podemos tener un entendimiento inicial del comportamiento de las variables a partir de un scatterplot
+
+```{r}
+plot(iris$Sepal.Length, iris$Sepal.Width, col= iris$Species)
+```
+
+
+Con la función ```pairs``` podemos tener una comparación de los scatterplot discriminados por especie
+
+```{r}
+pairs(iris[,1:4],pch=as.numeric(iris$Species),col=iris$Species)
+
+```
+
+
+```{r}
+#Ahora revisemos las frecuencias 
+
+table(iris$Species) #Frecuencia absoluta
+round((table(iris$Species)/length(iris$Species))*100,2) #frecuencia relativa
+
+
+```
+
+Con el histograma podemos observar la distribución de los valores de una variable
+
+```{r}
+hist(iris$Sepal.Length, main= 'Histograma de la longitud del Sepalo')
+```
+
+
+```{r}
+#Con summary podemos obtener un panorama general de nuestro dataset
+
+summary(iris) #nos muestra max, min, medidas de centralidad y medidas de posición
+
+
+```
+
+##### **Medidas de Tendencia Central**
+
+* **Media**
+Para calcular la media se utiliza la función ```mean```
+
+```{r}
+mean(iris$Petal.Length) #media para la variable petal.length
+
+tapply(iris$Petal.Length,iris$Species, mean) #utilizo esta función para generar cálculos discriminados por una variable cualitativa
+
+
+
+```
+
+* **Mediana**
+
+Para calcular la mediana se utiliza la función ```median```
+
+```{r}
+median(iris$Petal.Width)
+
+tapply(iris$Petal.Length,iris$Species, median)
+```
+
+* **Moda**
+
+En R no existe una función general para la moda, pero es fácil determinarla con las funciones ```table``` y  ```max```
+
+```{r}
+my_mode<-function(var){
+frec.var<-table(var)
+valor<-which(frec.var==max(frec.var)) # Elementos con el valor maximo
+names(valor)
+}
+
+```
+
+```{r}
+my_mode(iris$Sepal.Length) #corro la función y llamo la variable
+
+tapply(iris$Sepal.Length,iris$Species, my_mode)
+```
+
+##### **Medidas de Variabilidad**
+
+* **varianza**
+
+Para calcular la varianza se utiliza la función ```var```
+
+```{r}
+var(iris$Sepal.Width)
+
+tapply(iris$Sepal.Width, iris$Species, var)
+```
+
+* **Desviación Estándar**
+
+Para calcular la desviación estándar se utiliza la función ```sd```
+
+```{r}
+sd(iris$Petal.Length)
+
+#Cómo se aplicaría el tapply para generar la desviación estándar?
+#tapply(vector, index, function)
+
+
+
+```
+
+
+* **Coeficiente de variación**
+
+El CV es el cociente entre la desviación estándar y la media, entonces se puede calcular manualmente o crear una función para ello
+
+```{r}
+#Forma 1
+
+CV<- sd(iris$Sepal.Length)/mean(iris$Sepal.Length)
+CV
+
+#Forma 2
+
+CV <- function(x, na.rm = FALSE) {
+  sd(x, na.rm=na.rm) / mean(x, na.rm=na.rm)
+}
+
+CV(iris$Sepal.Length)
+
+
+# Aplicación por especie
+
+tapply(iris$Sepal.Length, iris$Species, CV)
+
+```
+
+
+##### **Medidas de Posición**
+
+* **Cuartiles, deciles y percentiles**
+
+R solo cuenta con la función ```quantile```, por tal motivo, es necesario definir un vector de las proporciones cuando se desee generar los deciles o percentiles
+
+
+```{r}
+#cuartiles
+
+quantile(iris$Sepal.Length) 
+
+tapply(iris$Sepal.Length, iris$Species, quantile)
+
+#Deciles
+
+decile<- seq(0,1, .1)
+
+quantile(iris$Sepal.Length, decile)
+
+
+#Percentiles
+
+percentile<- seq(0,1, 0.01)
+
+quantile(iris$Sepal.Length, percentile)
+
+
+```
+
+Gráficamente podemos ver los cuartiles en el set de datos analizado a partir de un boxplot
+
+![](https://miro.medium.com/max/700/1*2c21SkzJMf3frPXPAR_gZA.png)
+
+En R podemos generar este gráfico con la función ```boxplot```
+
+```{r}
+ boxplot(iris$Sepal.Length,main="Boxplot Sepal.Length")
+```
+
+Si queremos ver el boxplot por cada tipo de flor:
+
+```{r}
+boxplot(iris$Sepal.Length~iris$Species,ylab="Sepal.Length")
+
+```
+
+
+##### **Medidas de Forma**
+
+* **Asimetría**
+
+Para calcular la asimetría, podemos usar la librería ```moments``` y la función ```skewness```
+
+```{r}
+#install.packages('moments') #función para instalar paquetes
+library(moments) # función para invocar la librería
+
+
+skewness(iris$Petal.Length)
+
+#Vamos a revisar la asimetría para la misma variable discriminada por especie
+
+tapply(iris$Petal.Length, iris$Species, skewness)
+```
+
+
+* **Kurtosis**
+
+Para calcular la kurtosis, podemos usar la librería ```moments``` y la función ```kurtosis```
+
+```{r}
+kurtosis(iris$Petal.Length)
+
+#Vamos a revisar la kurtosis para la misma variable discriminada por especie
+
+tapply(iris$Petal.Length, iris$Species, kurtosis)
+
+```
+
+
+##### **Correlación**
+
+Para determinar la correlación utilizamos la función ```cor``` de la librería ```MASS```
+
+```{r}
+cor(iris[,1:4])
+
+#Ahora miremos la correlación para la especie virginica
+
+virginica<- subset(iris, iris$Species== 'virginica')
+
+correlacion<- cor(virginica[,1:4])
+```
+
+
+Ahora veamos cómo podemos observar la correlación gráficamente. Para ello, R tiene gran cantidad de paquetes, en este caso vamos a usar la librería ```corrplot```
+
+```{r}
+
+#install.packages("corrplot")
+library(corrplot)
+
+data<- virginica[,1:4]
+
+corrplot(cor(data),        # Matriz de correlación
+         method = "shade", # Método para el gráfico de correlación
+         type = "full",    # Estilo del gráfico (también "upper" y "lower")
+         diag = TRUE,      # Si TRUE (por defecto), añade la diagonal
+         tl.col = "black", # Color de las etiquetas
+         bg = "white",     # Color de fondo
+         title = "",       # Título
+         col = NULL)       # Paleta de colores
+
+```
+
+
+
+
+
+
+
+
+
+
+
