@@ -1,0 +1,215 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+
+```{r}
+library(tidyverse)
+library(scales)
+library(widyr)
+library(tidymetrics)
+```
+
+```{r}
+big_mac <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-22/big-mac.csv')
+```
+
+
+## TRATAMIENTO DE BASES DE DATOS
+
+
+¿QUé pasa si analizo la información sin hacerle el debi tratamiento?
+
+```{r}
+big_mac%>%
+  summary()
+```
+
+
+```{r}
+big_mac<-big_mac%>%
+  mutate_if(is.character,as.factor)
+
+big_mac%>%
+  summary()
+```
+
+## Balanceo de data
+
+```{r}
+big_mac%>%
+  count(name, sort = TRUE)%>%
+  mutate(name=fct_reorder(name,n))%>%
+  ggplot(aes(n,name))+
+  geom_col()
+```
+Acá se balanceo la data
+
+```{r}
+big_mac<-big_mac%>%
+  filter(date==max(date))
+```
+
+## Poner los nombres que son
+
+
+```{r}
+big_mac<-big_mac%>%
+  rename(country=name)
+
+big_mac<-big_mac%>%
+  arrange(desc(date))
+
+big_mac
+```
+
+### EDA 
+
+
+```{r, fig.height=4}
+big_mac<-big_mac%>%
+  rename(country=name)%>%
+  add_count(country,name = "total_country")%>%
+  filter(total_country==max(total_country))%>%
+  arrange(country,date)
+  
+```
+
+
+
+```{r, fig.height=4}
+theme_set(theme_bw())
+big_mac%>%
+  mutate(country=fct_reorder(country,local_price,function(.) last(.)/first(.)))%>%
+  ggplot(aes(date,local_price,color=country))+
+  geom_line(show.legend = F)+
+  facet_wrap(~country, scales='free_y')
+```
+
+
+```{r, fig.height=4}
+big_mac%>%
+  mutate(country=fct_reorder(country,local_price,function(.) last(.)/first(.)))%>%
+  ggplot(aes(date,local_price,color=country))+
+  geom_line(show.legend = F)+
+  geom_smooth(color='black', alpha=0.4)+
+  facet_wrap(~country, scales='free_y')
+```
+
+
+Una gráfica más bonita
+
+
+```{r,fig.height=4}
+big_mac%>%
+  mutate(country=fct_reorder(country,local_price,function(.) last(.)/first(.)))%>%
+  ggplot(aes(date,local_price,color=country))+
+  geom_line(show.legend = F)+
+  expand_limits(y=0)+
+  labs(y='Precio Big Mac en términos de moneda local',
+       x='',
+       title = "% indice Big mac en varios paises",
+       caption = 'Gente que tomo el curso en el BIT')+
+  facet_wrap(~country, scales='free_y')
+```
+
+
+
+## Vamos a ver la variación
+
+
+```{r}
+big_mac%>%
+  group_by(country)%>%
+  mutate(inflacion=last(local_price)/first(local_price))%>%
+  ungroup()%>%
+  arrange(desc(inflacion))%>%
+  mutate(country=fct_reorder(country,inflacion))%>%
+  ggplot(aes(inflacion,country,fill=inflacion))+
+  geom_col()+
+  scale_fill_gradient(low = "pink",high = "red")+
+  labs(y='',
+       x='Variación de precios entre 2000-2020',
+       title = "Comparativo de la inflación a través del Big Mac Index",
+       subtitle = "En varios países")
+```
+
+
+## Analizando las variaciones
+
+
+```{r}
+big_mac%>%
+  group_by(date)%>%
+  mutate(usd_price= local_price[iso_a3=='USA'],
+         us_gdp =gdp_dollar[iso_a3=='USA'])%>%
+  ungroup()%>%
+  mutate(big_mac_cambio = local_price/ usd_price)%>%
+  select(date, iso_a3, country, local_price, dollar_ex, usd_price, big_mac_cambio, usd_raw, gdp_dollar, us_gdp, usd_adjusted)
+```
+```{r}
+big_mac%>%
+  group_by(date)%>%
+  mutate(usd_price= local_price[iso_a3=='USA'],
+         us_gdp =gdp_dollar[iso_a3=='USA'])%>%
+  ungroup()%>%
+  mutate(big_mac_cambio = local_price/ usd_price)%>%
+  filter(country=='Argentina',
+         !is.na(gdp_dollar))%>%
+  mutate(precio_gringo = usd_price* dollar_ex)%>%
+  ggplot(aes(date,local_price))+
+  geom_line(aes(color="Precio Local"))+
+  geom_line(aes(y= precio_gringo,color="Precio Gringo"))
+```
+
+
+```{r}
+big_mac%>%
+  group_by(date)%>%
+  mutate(usd_price= local_price[iso_a3=='USA'],
+         us_gdp =gdp_dollar[iso_a3=='USA'])%>%
+  ungroup()%>%
+  mutate(big_mac_cambio = local_price/ usd_price)%>%
+  filter(country=='Canada',
+         !is.na(gdp_dollar))%>%
+  mutate(precio_gringo = usd_price* dollar_ex)%>%
+  ggplot(aes(date,local_price))+
+  geom_line(aes(color="Precio Local"))+
+  geom_line(aes(y= precio_gringo,color="Precio Gringo"))
+```
+
+```{r}
+library(ggrepel)
+big_mac%>%
+  filter(date==max(date))%>%
+  ggplot(aes(gdp_dollar,usd_adjusted))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  geom_text_repel(aes(label=country))
+```
+
+
+```{r}
+big_mac%>%
+  filter(date==max(date))%>%
+  filter(!is.na(gdp_dollar))%>%
+  ggplot(aes(gdp_dollar,usd_adjusted))+
+  geom_point()+
+  geom_smooth(method = "lm")+
+  geom_text_repel(aes(label=country))
+```
+```{r}
+big_mac %>%
+  filter(country != "United States") %>%
+  select(date, country, local_price, dollar_ex, usd_raw, gdp_dollar, usd_adjusted) %>%
+  filter(!is.na(gdp_dollar)) %>%
+  mutate(country = fct_reorder(country, usd_raw)) %>%
+  ggplot(aes(date, usd_adjusted)) +
+  geom_line() +
+  geom_hline(color = "red", lty = 2, yintercept = 0) +
+  expand_limits(y = 0) +
+  facet_wrap(~ country) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+

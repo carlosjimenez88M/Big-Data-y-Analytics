@@ -40,10 +40,17 @@ En este curso usted aprenderá a manejar problemas del mundo real a través de h
 
 ## Calendario
 
-|Fecha|Clase|Ejercicio|
-|-----:|-----|------:|
-|2021-02-18|[Programación en R](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Presentaciones/R.pdf)|[E1](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Ejercicios/E1.md)|
+|Fecha|Clase|Ejercicio|Ejercicio en clase|
+|-----:|-----|------:|------:|
+|2021-02-18|[Programación en R](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Presentaciones/R.pdf)|[E1](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Ejercicios/E1.md)|[Ejercicio en clase]()|
+|2021-02-25|[Analytics]()|[E2]()|[Ejercicio en  Clase]()|
 
+
+## Encuenta para el proyecto final
+
+Recuerde contestar esta encuesta antes del 24 de de Febrero, respuestas después de dicha fecha no serán tomadas en cuenta. 
+
+[Encuesta](https://docs.google.com/forms/d/e/1FAIpQLSfMOg9nvZxNLuRFN1orMuKKll0Qp-yzGXmzoJu-jFPBi881SA/viewform?usp=sf_link)
 
 ## Proyecto Final
 
