@@ -4,7 +4,7 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ## Objetivo 
@@ -16,11 +16,449 @@ La base de datos que trabajaremos es : [Telco-Churn](https://www.kaggle.com/blas
 
 ## Un poquito de teoría 
 
-![](https://sitiobigdata.com/wp-content/uploads/2018/08/Los-tres-n%C3%BAcleos-de-Data-Science.png)
+![](https://sitiobigdata.com/wp-content/uploads/2018/08/Los-tres-n%C3%BAcleos-de-Data-Science.png)^[1]
 
 
 [^1]: Tomado de : https://sitiobigdata.com/2018/08/27/los-tres-nucleos-de-data-science/#
 
 
+Uno de los objetivos del analytics tiene que ver con la capacidad de responder alguna de las siguientes preguntas rectoras:
+
+* ¿Hay alguna diferencia entre A y B, (Usuarios, Creatividades, etc) 
+* ¿Es extraño el comportamiento de este cliente ó evento  ?
+* ¿Cuánto es / Cuánto será?
+* ¿Qué se podría hacer?
+
+## Pero ....... ¿Qué es el Analytics?
+
+Es la sumatoria de métodos y herramientas para entender la información y con base a ello tomar decisiones.
+
+El analytics tiene tres componentes :
+
+* Componente Descriptivo:
+  
+  + ¿Qué paso?
+  + ¿Cuanto?, ¿Donde?
+  + ¿Cuál es el problema?
+  
+* Componente Predictivo:
+  
+  + ¿Alertas?
+  + ¿Qué podría pasar si? (simulaciones)
+  + ¿Qué pasará ? (Pronósticos)
+
+  
+  
+* Componente Prescriptivo :
+  
+  + ¿Cómo puedo tener un mejor resultado? (Optimización)
+  + ¿Qué otras variables debo tener presentes?
+  
+  
+## Analytics ejercicio practico
 
 
+```{r}
+library(tidyverse) # Paquete para manipular datos
+library(janitor) # Paquete para limpiar datos 
+library(cowplot) # paquete gráfico
+library(GGally) # Paquete Gráfico
+library(corrplot) # Paquete Gráfico
+library(rlang)
+library(skimr) # Mira la completitud de los datos
+library(stringr)
+library(MASS)
+library(car)
+library(InformationValue)
+
+```
+
+ Base de datos
+```{r}
+data <- read_csv("../data/WA_Fn-UseC_-Telco-Customer-Churn.csv")
+```
+
+
+```{r}
+data%>%
+  head()
+```
+
+## Obejtivos del estudio
+
+* Entender que nos quieren decir los datos (EDA)
+
+* Construir un modelo de clasificación para predecir ¿qué usuarios haran churn?
+
+** ¿Qué es Churn? : Tasa de deserción
+
+
+
+## EDA
+
+Explorando de manera eficiente la base de datos
+
+
+```{r}
+data%>%
+  skim()
+```
+
+Se ajusta la selección de variables
+
+¿Por qué quitamos esta variable? -> discusión en clase 
+```{r}
+data <- data %>%
+  dplyr::select(-customerID)
+
+data%>%
+  head()
+```
+
+Creamos un indicaror 
+
+```{r}
+data<-data %>%
+  mutate(id = 1:n())
+
+data
+```
+
+Se limpian los nombres de las variables
+
+```{r}
+data<-data%>%
+  clean_names()
+
+data%>%
+  head()
+```
+Ahora si a verificar la data 
+
+
+```{r}
+data%>%
+  skim()
+```
+
+
+
+Convertir en factor algunas variables
+
+```{r}
+data<-data%>%
+  mutate_if(is.character,as.factor)%>%
+  mutate(senior_citizen = factor(senior_citizen))%>%
+  filter(!is.na(total_charges))
+
+data%>%
+  head()
+```
+
+
+## Explorando las variables númericas en presencia de valores atípicos
+
+
+
+```{r}
+data%>%
+  ggplot(aes(tenure, fill=gender))+
+  geom_histogram()
+```
+
+
+```{r}
+data%>%
+  ggplot(aes(monthly_charges, fill=gender))+
+  geom_histogram()
+```
+
+
+```{r}
+data%>%
+  ggplot(aes(total_charges, fill=gender))+
+  geom_histogram()
+```
+
+
+¿Cómo visualizar datos atípicos?
+
+```{r}
+data%>%
+  ggplot(aes(gender,tenure, fill=phone_service))+
+  geom_boxplot()
+```
+
+```{r}
+data%>%
+  ggplot(aes(gender,monthly_charges, fill=gender))+
+  geom_boxplot()
+```
+
+```{r}
+#total_charges
+data%>%
+  ggplot(aes(payment_method,total_charges, fill=gender))+
+  geom_boxplot()+
+  coord_flip()
+```
+
+## Evaluando el churn
+
+
+```{r}
+data%>%
+  group_by(churn)%>%
+  summarize(n=n())%>%
+  mutate(pct=n/sum(n))
+```
+
+
+Buscando una razón para el churn 
+
+```{r}
+theme_set(theme_linedraw())
+data%>%
+  ggplot(aes(tenure,fill=churn))+
+  geom_bar(alpha=0.7)
+```
+
+
+Tu tarea es colocarle el valor dentro de las barritas una pista **geom_text**
+```{r}
+data %>% 
+  ggplot(mapping = aes(x = tenure)) +
+  geom_bar(aes(fill = churn),position = 'fill',color="black",alpha=0.7) +
+  scale_y_continuous(labels = scales::percent_format())
+```
+
+
+```{r}
+data %>% 
+  ggplot(aes(x =total_charges,fill = churn)) + 
+  geom_density(alpha=0.7,color="black")
+```
+
+Y si lo evaluamos por una correlación de toda la vida
+
+```{r}
+data%>%
+  select_if(is.numeric)%>%
+  dplyr::select(-id)%>%
+  cor()%>%
+  corrplot()
+```
+
+
+```{r}
+library(GGally)
+data%>%
+  select_if(is.numeric)%>%
+  dplyr::select(-id)
+
+data%>%
+  dplyr::select(churn,tenure,monthly_charges,total_charges)%>%
+  ggpairs(aes(color=churn))
+```
+
+
+```{r}
+sam <- theme(plot.background = element_rect(fill="#F5FFFA",color = "darkblue"),
+             plot.title = element_text(size=25, hjust=.5),
+             axis.title.x = element_text(size=25, color = "black"),
+              axis.title.y = element_text(size=25, color = "black"),
+             axis.text.x = element_text(size=20),
+             axis.text.y = element_text(size=20),
+            legend.position = "top",
+            legend.text = element_text(size=20),
+            legend.title = element_text(size=20))
+
+plot_categorical_vs_target <- function(data, target, list_of_variables){
+    target <- sym(target) #Converting the string to a column reference
+    i <-1 
+    plt_matrix <- list()
+    for(column in list_of_variables){
+        col <- sym(column) 
+        temp <- data %>% group_by(!!sym(col),!!sym(target)) %>% 
+           summarize(count = n()) %>% 
+           mutate(prop = round(count/sum(count),2)) %>%
+           ungroup()%>%
+           mutate(label_text = str_glue("n : {count}\nprop:{scales::percent(prop)}"))
+        
+        
+        options(repr.plot.width=20, repr.plot.height=15) 
+        
+           plt_matrix[[i]]<-ggplot(data= temp, aes(x=!!sym(col), y=prop,fill =!!sym(target))) + 
+             geom_bar(stat="identity",alpha=0.7,color = "black") +
+             geom_label(aes(label=label_text),size = 8, hjust = 0.5, fill = "white",color="black") +
+             scale_y_continuous(labels=scales::percent_format()) +
+             xlab(column) +
+             ylab("Prop") +
+             ggtitle(paste("Distribution of 'churn'\nfrequency across",column)) +
+             theme_minimal()+
+        theme(axis.text.x = element_text(angle=10))+
+             sam
+           i<-i+1
+    }
+                
+    plot_grid(plotlist = plt_matrix,ncol=2)
+}
+
+```
+
+```{r,fig.height=8}
+plot_categorical_vs_target(data,'churn',c('gender','senior_citizen','partner','dependents'))
+
+```
+## Creando un modelito
+
+
+```{r}
+
+data<-data%>%
+  na.omit()
+library(tidymodels)
+set.seed(42)
+tidy_split <- initial_split(data, prop = .8, strata = churn)
+tidy_train <- training(tidy_split)
+tidy_test <- testing(tidy_split)
+tidy_k_folds <- vfold_cv(tidy_train)
+```
+
+```{r}
+tidy_rec <- recipe(churn~., data = tidy_train) %>% 
+  step_BoxCox(all_numeric(), -all_outcomes()) %>% 
+  step_normalize(all_numeric(), -all_outcomes()) %>% 
+  step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) %>% 
+  step_downsample(churn)
+xgboost_model <- boost_tree(trees = tune(), tree_depth = tune()) %>% 
+  set_mode("classification") %>% 
+  set_engine("xgboost")
+xgboost_grid <- grid_regular(parameters(xgboost_model), levels = 5, filter = c(trees > 1))
+model_metrics <- metric_set(roc_auc, accuracy, mn_log_loss)
+```
+
+
+```{r}
+xgboost_tune <- tune_grid(
+  xgboost_model,
+  tidy_rec,
+  grid = xgboost_grid,
+  resamples = tidy_k_folds,
+  metrics = model_metrics
+)
+
+```
+
+
+```{r}
+xgboost_tune %>% 
+  autoplot()
+```
+
+```{r}
+xgboost_tune %>% show_best("accuracy")%>%
+  arrange(desc(mean))
+```
+
+xgboost_tune %>% show_best("accuracy")%>%
+  arrange(desc(mean))
+
+```{r}
+final_model <- workflow() %>% 
+  add_model(xgboost_model) %>% 
+  add_recipe(tidy_rec) %>% 
+  finalize_workflow(xgboost_tune %>% show_best("accuracy", n = 1))
+```
+
+
+```{r}
+eval_df <- last_fit(final_model, tidy_split)
+```
+
+
+
+```{r}
+eval_df %>% 
+  collect_metrics()
+```
+
+```{r}
+eval_df %>% 
+  collect_predictions() %>% 
+  conf_mat(truth = churn, estimate = .pred_class)
+```
+
+
+
+Ahora a evaluar los factores de Churn
+
+
+```{r}
+glm_spec <- logistic_reg() %>%
+  set_engine("glm")
+churn_wf <- workflow() %>%
+  add_formula(churn ~ .)
+
+glm_rs <- churn_wf %>%
+  add_model(glm_spec) %>%
+  fit_resamples(
+    resamples = tidy_k_folds,
+    control = control_resamples(save_pred = TRUE)
+  )
+
+collect_metrics(glm_rs)
+```
+
+```{r}
+glm_rs%>%
+  conf_mat_resampled()
+```
+
+```{r}
+collect_metrics(glm_rs)
+```
+
+```{r}
+members_final <- churn_wf %>%
+  add_model(glm_spec) %>%
+  last_fit(tidy_split)
+
+
+collect_metrics(members_final)
+```
+
+```{r}
+collect_predictions(members_final) %>%
+  conf_mat(churn, .pred_class)
+```
+
+```{r}
+library(knitr)
+members_final %>%
+  pull(.workflow) %>%
+  pluck(1) %>%
+  tidy(exponentiate = TRUE) %>%
+  arrange(estimate) %>%
+  kable(digits = 3)
+```
+```{r}
+members_final %>%
+  pull(.workflow) %>%
+  pluck(1) %>%
+  tidy() %>%
+  filter(term != "(Intercept)",
+         !is.na(estimate)) %>%
+  ggplot(aes(estimate, fct_reorder(term, estimate))) +
+  geom_vline(xintercept = 0, color = "gray50", lty = 2, size = 1.2) +
+  geom_errorbar(aes(
+    xmin = estimate - std.error,
+    xmax = estimate + std.error
+  ),
+  width = .2, color = "gray50", alpha = 0.7
+  ) +
+  geom_point(size = 2, color = "#85144B") +
+  labs(y = NULL, x = "Razones a través del coeficiente de regresión")
+```
+* Las razones por la que los usuarios se quedan  son los rangos positivos
+* Las razones por las que no se quedan es por los rangos negativos.
