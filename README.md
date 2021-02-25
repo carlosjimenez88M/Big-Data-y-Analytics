@@ -42,8 +42,8 @@ En este curso usted aprenderá a manejar problemas del mundo real a través de h
 
 |Fecha|Clase|Ejercicio|Ejercicio en clase|
 |-----:|-----|------:|------:|
-|2021-02-18|[Programación en R](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Presentaciones/R.pdf)|[E1](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Ejercicios/E1.md)|[Ejercicio en clase]()|
-|2021-02-25|[Analytics]()|[E2]()|[Ejercicio en  Clase]()|
+|2021-02-18|[Programación en R](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Presentaciones/R.pdf)|[E1](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Ejercicios/E1.md)|[Ejercicio en clase](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Ejercicios/Ejercicio%20en%20Clase%20.Rmd)|
+|2021-02-25|[Analytics](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Presentaciones/Clase-Analytics.md)|[E2](https://github.com/carlosjimenez88M/Big-Data-y-Analytics/blob/master/Ejercicios/E2.Rmd)|[Ejercicio en  Clase]()|
 
 
 ## Encuenta para el proyecto final
